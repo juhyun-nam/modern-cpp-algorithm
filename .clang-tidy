@@ -1,0 +1,11 @@
+---
+Checks:          '-*,
+                  cppcoreguidelines-*,
+                  google-*,
+                  modernize-*,
+                  -modernize-use-trailing-return-type'
+WarningsAsErrors: ''
+AnalyzeTemporaryDtors: false
+FormatStyle:     Chromium
+...
+
