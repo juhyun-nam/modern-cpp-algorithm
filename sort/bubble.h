@@ -4,36 +4,48 @@
 
 #ifndef SORT_BUBBLE_H_
 #define SORT_BUBBLE_H_
-#include <functional>
-#include <iterator>
 
-namespace ma {
+#include "sort/sort_base.h"
 
-template <typename It,
-          typename Comp = std::less_equal<typename std::iterator_traits<It>::value_type>>
-inline void BubbleSort(It begin, It end, Comp comp = Comp()) {
-  static_assert(std::is_base_of<std::bidirectional_iterator_tag,
-                                typename std::iterator_traits<It>::iterator_category>::value,
-                "iterator must be bidirectional");
-  auto last = end;
+namespace mca {
+namespace detail {
+
+template <typename It, typename Comp>
+inline void BubbleSort(It begin, It end, Comp comp) {
+  static_assert(IsForwardIterator<It>::value, "iterator must be forward");
+
   auto post = begin;
   ++post;
-  for (; last != post; --last) {
+  auto last = end;
+  while (true) {
     bool swapped = false;
-    auto first_l = begin;
-    auto first_r = post;
-    for (; first_r != last; ++first_l, ++first_r) {
-      if (!comp(*first_l, *first_r)) {
-        std::iter_swap(first_l, first_r);
+    auto it_l = begin;
+    auto it_r = post;
+
+    for (; it_r != end; ++it_l, ++it_r) {
+      if (!(comp(*it_l, *it_r) || *it_l == *it_r)) {
+        std::iter_swap(it_l, it_r);
         swapped = true;
       }
     }
     if (!swapped) {
       break;
     }
+    last = it_l;
   }
 }
 
-}  // namespace ma
+}  // namespace detail
+
+template <typename It>
+inline void Sort(Bubble, It begin, It end) {
+  detail::BubbleSort(
+      begin, end, std::less<typename std::iterator_traits<It>::value_type>{});
+}
+template <typename It, typename Comp>
+inline void Sort(Bubble, It begin, It end, Comp comp) {
+  detail::BubbleSort(begin, end, comp);
+}
+}  // namespace mca
 
 #endif  // SORT_BUBBLE_H_

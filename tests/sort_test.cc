@@ -13,6 +13,20 @@
 #include "sort/selection.h"
 #include "sort/shell.h"
 
+namespace {
+
+template <typename TestType>
+void SubCase(const TestType& type,
+             const char* name,
+             const std::vector<int>& main_data) {
+  SUBCASE(name) {
+    auto data = main_data;
+    mca::Sort(type, data.begin(), data.end());
+    CHECK(std::is_sorted(data.begin(), data.end()));
+  }
+}
+}  // namespace
+
 TEST_CASE("Sort Test") {
   std::vector<int> main_data;
   std::srand(std::time(nullptr));
@@ -29,52 +43,49 @@ TEST_CASE("Sort Test") {
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
 
-  SUBCASE("Bubble") {
-    auto data = main_data;
-    ma::BubbleSort(data.begin(), data.end());
-    CHECK(std::is_sorted(data.begin(), data.end()));
+  SubCase(mca::bubble, "Bubble", main_data);
+  SubCase(mca::insertion, "Insertion", main_data);
+
+  SUBCASE("Counting") {
+    mca::Counting<int> counting;
+    for (auto v : main_data) {
+      counting.push_back(v);
+    }
+    counting.sort();
+    CHECK(std::is_sorted(counting.begin(), counting.end()));
   }
+
   SUBCASE("Selection") {
     auto data = main_data;
-    ma::SelectionSort(data.begin(), data.end());
-    CHECK(std::is_sorted(data.begin(), data.end()));
-  }
-  SUBCASE("Insertion") {
-    auto data = main_data;
-    ma::InsertionSort(data.begin(), data.end());
+    mca::SelectionSort(data.begin(), data.end());
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
   SUBCASE("Heap") {
     auto data = main_data;
-    ma::HeapSort(data.begin(), data.end());
+    mca::Sort(mca::heap, data.begin(), data.end());
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
   /*
   SUBCASE("Merge") {
     auto data = main_data;
-    ma::MergeSort(data.begin(), data.end());
+    mca::MergeSort(data.begin(), data.end());
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
   */
   SUBCASE("Quick") {
     auto data = main_data;
-    ma::QuickSort(data.begin(), data.end());
+    mca::QuickSort(data.begin(), data.end());
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
   SUBCASE("Shell") {
     auto data = main_data;
-    ma::ShellSort(data.begin(), data.end());
-    CHECK(std::is_sorted(data.begin(), data.end()));
-  }
-  SUBCASE("Counting") {
-    auto data = main_data;
-    ma::CountingSort(data.begin(), data.end(), 0, kSortLimit - 1);
+    mca::ShellSort(data.begin(), data.end());
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
   /*
   SUBCASE("Radix") {
     auto data = main_data;
-    ma::RadixSort(data.begin(), data.end(), 2);
+    mca::RadixSort(data.begin(), data.end(), 2);
     CHECK(std::is_sorted(data.begin(), data.end()));
   }
   */

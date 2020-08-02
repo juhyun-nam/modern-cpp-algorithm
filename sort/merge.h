@@ -7,7 +7,7 @@
 
 #include <iterator>
 
-namespace ma {
+namespace mca {
 
 /*
 template <

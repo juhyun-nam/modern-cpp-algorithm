@@ -4,28 +4,52 @@
 
 #ifndef SORT_INSERTION_H_
 #define SORT_INSERTION_H_
-#include <iterator>
 
-namespace ma {
+#include "sort/sort_base.h"
 
-template <
-    typename It,
-    typename Comp = std::less<typename std::iterator_traits<It>::value_type>>
-inline void InsertionSort(It first, It last, Comp comp = Comp()) {
-  auto length = last - first;
-  for (int i = 1; i < length; ++i) {
-    auto j = i;
-    while (j > 0) {
-      if (!comp(*(first + j - 1), *(first + j))) {
-        std::iter_swap(first + j - 1, first + j);
-        --j;
-      } else {
+namespace mca {
+namespace detail {
+
+template <typename It, typename Comp>
+inline void InsertionSort(It begin, It end, Comp comp) {
+  static_assert(IsBidirectionalIterator<It>::value,
+                "iterator must be bidirectional");
+
+  if (begin == end) {
+    return;
+  }
+  auto pivot = begin;
+  while (true) {
+    auto lt_l = pivot;
+    ++pivot;
+    auto lt_r = pivot;
+    if (lt_r == end) {
+      break;
+    }
+    while (lt_r != begin) {
+      if (comp(*lt_l, *lt_r) || *lt_l == *lt_r) {
         break;
+      } else {
+        std::iter_swap(lt_l, lt_r);
+        --lt_l;
+        --lt_r;
       }
     }
   }
 }
 
-}  // namespace ma
+}  // namespace detail
+
+template <typename It>
+inline void Sort(Insertion, It begin, It end) {
+  detail::InsertionSort(
+      begin, end, std::less<typename std::iterator_traits<It>::value_type>{});
+}
+template <typename It, typename Comp>
+inline void Sort(Insertion, It begin, It end, Comp comp) {
+  detail::InsertionSort(begin, end, comp);
+}
+
+}  // namespace mca
 
 #endif  // SORT_INSERTION_H_

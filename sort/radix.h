@@ -6,7 +6,7 @@
 #define SORT_RADIX_H_
 #include <iterator>
 
-namespace ma {
+namespace mca {
 
 /*
 template <typename It>
